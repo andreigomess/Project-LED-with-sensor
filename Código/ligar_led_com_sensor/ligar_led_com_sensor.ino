@@ -1,6 +1,6 @@
 //LDR = sensor de luz.
 
-const int pino_ldr = A3;
+const int pino_ldr = A1;
 float leitura_ldr = 0; //leitura analógica, há valores não inteiros
 float tensao_analogica = 0; //para transformar os valores de tensao digital para analogico
 
