@@ -69,3 +69,58 @@ A ```leitura_ldr``` recebe a leitura analógica de ```pino_ldr```, que nesse cas
 
 ## 3. Ligar o LED
 - Agora é a hora de ligar o LED. Como é de conhecimento prévio, o LED possui polaridade: O ânodo (perna maior) recebe a energia e o cátodo (perna menor) recebe o GND para fluir corrente.
+- A ligação é simples: o GND vai no cátodo e o ânodo é energizado através de um pino digital do Arduino (fio azul), através de um resistor (nesse caso, será usado um 1,5K Ohms).
+
+![ligarLED](Imagens/ligar_LED.png)
+
+# Software: programando o acendimento automático do LED com base na luz
+A parte de programação do LDR foi mais descrita dentro do tópico acima de Hardware, pois ficaria muito estranho explicar o software e o hardware ali de forma separada. Aqui, será demonstrado a programação do LED e o código final.
+
+## 1. Definindo o pino do LED e programando
+- O pino do LED escolhido é o pino 3 digital do Arduino. Declaramos ``const int pino_led = 3;``
+- Dentro de ``setup()``, definimos o pino do LED como saída: ``pinMode(pino_led, OUTPUT);``
+- Dentro de ``loop()``, será realizada a lógica de controle do LED: a decisão tomada foi de ligar o LED com base em uma leitura de ``tensao_analogica`` maior que 2.5V e desligar caso a leitura seja abaixo disso.
+
+## 2. Código final
+- Dessa forma, o código fica:
+```
+//LDR = sensor de luz.
+
+const int pino_ldr = A1;
+float leitura_ldr = 0; //leitura analógica, há valores não inteiros
+float tensao_analogica = 0; //para transformar os valores de tensao digital para analogico
+
+const int pino_led = 3;
+
+void setup()
+{
+  Serial.begin(9600); //define a taxa de transferência serial em bit/s
+  pinMode(pino_led, OUTPUT); //o pino do LED é de saída de sinal elétrico
+}
+
+void loop()
+{
+  leitura_ldr = analogRead(pino_ldr); //função que capta a leitura do pino_ldr (nesse caso, A3)
+  tensao_analogica = (5*leitura_ldr)/1023;
+  Serial.print("Tensao LDR: ");
+  Serial.println(tensao_analogica);
+  
+  //Agora para ligar o led:
+  if(tensao_analogica > 2.5){
+  	digitalWrite(pino_led, HIGH);
+  }
+  else{
+    digitalWrite(pino_led, LOW);
+  }
+}
+```
+
+# Vídeos do projeto
+
+## Simulador (Thinkercad):
+
+![simuladorLED](Gifs/led_simulador.gif)
+
+## Real (Físico):
+
+![fisicoLED](Gifs/led_fisico.gif)
