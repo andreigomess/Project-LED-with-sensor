@@ -8,7 +8,7 @@ A ideia central é utilizar um fotorresistor, de sigla LDR (do inglês Light Dep
 As imagens serão novamente do [Thinkercad](https://www.tinkercad.com/dashboard), um simulador de projetos eletrônicos. É bastante útil também para ajudar a montar o projeto fisicamente, mitigando qualquer erro de conexão ou na montagem no circuito que possa ocorrer e consequentemente danificar algum componente.
 
 ## Componenetes de Software necessários:
-- [IDE Arduino](https://www.arduino.cc/en/software/)
+- [Arduino IDE](https://www.arduino.cc/en/software/)
 
 ## Componentes de Hardware necessários:
 - 1 Microcontrolador - Nesse caso, será usado o Arduino Uno
@@ -37,3 +37,35 @@ Pronto, agora nosso LDR está energizado corretamente. Há um motivo específico
 - Passadas explicações, vamos conectar o LDR na entrada analógica do Arduino. A trilha que recebe a corrente de 5V através do resistor é a que será utilizada para conectar a entrada analógica. Conectamos ao pino A1.
 
 ![ligarAnalog](Imagens/ligar_analog.png)
+
+- Para uma visualização da captação de dados do LDR, vamos fazer uma pequena programação e verificar no monitor serial do Arduino essa leitura. Com ela, vamos verificar o valor de tensão que entrada no pino analógico.
+- Na [Arduino IDE](https://www.arduino.cc/en/software/), abra um novo programa e crie a seguintes variáveis:
+```
+const int pino_ldr = A1;
+float leitura_ldr = 0;
+float tensao_analogica = 0;
+```
+A tensão analógica é para transformar a leitura do LDR (```leitura_ldr```) em um valor de tensão (```tensao_analogica```) que será lido.
+
+- Nas funções principais do Arduino, faremos:
+```
+void setup(){
+    Serial.begin(9600);
+}
+
+void loop(){
+    leitura_ldr = analogRead(pino_ldr);
+    Serial.print("Tensao LDR: ");
+    Serial.println(leitura_ldr);
+}
+```
+A ```leitura_ldr``` recebe a leitura analógica de ```pino_ldr```, que nesse caso, é o A1. Como foi explicado antes, o ADC transforma a tensão contínua em um valor digital. Ao rodar o comando o jeito que está, perceba que a leitura não será igual a do multímetro. Isso acontece porque o valor dado pelo ADC na sua resolução de 10 bits, ou seja, números de 0 a 1023, mas o valor varia de 0 a 5V. Veja a imagem:
+
+![leituraAnalog](Imagens/leitura_analog.png)
+
+- Portanto, é necessário um ajuste proporcional para a visualização correta da tensão. Isso pode ser feito por uma regra de 3 básica, onde 5V equivale a 1023 e ```tensao_analogica```, que é digital, equivale a ```leitura_ldr```, que é analógica. Dessa forma, teremos: ```tensao_analogica = (5*leitura_ldr)/1023```. Basta adicionar isso ao código e trocar o comando para ``Serial.println(tensao_analogica)``. Dessa forma, teremos:
+
+![leituraProporcional](Imagens/leitura_proporcional.png)
+
+## 3. Ligar o LED
+- Agora é a hora de ligar o LED. Como é de conhecimento prévio, o LED possui polaridade: O ânodo (perna maior) recebe a energia e o cátodo (perna menor) recebe o GND para fluir corrente.
