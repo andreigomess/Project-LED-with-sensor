@@ -38,4 +38,25 @@ Repare nas cores. O fio azul está conectado ao SDL e ao pino A5, enquanto o fio
 ### Explicações sobre o código
 - Vamos fazer algumas definições:
 
-1. ``LARGURA_TELA = 128`` e ``ALTURA_TELA = 64``
+1. ``LARGURA_TELA 128`` e ``ALTURA_TELA 64``: Definem a matriz de pixels. Essa informação dita o tamanho do buffer (1024 bytes) que será alocado na memória SRAM do microcontrolador.
+2. ``RESET_TELA -1``: Como a tela não possui botão de reset físico, o valor -1 é usado para reset lógico via software.
+3. ``ENDERECO_I2C 0x3C``: É o endereço hexadecimal padrão do chip SSD1306 no barramento I2C. O Arduino usa esse endereço para garantir que os dados de vídeo cheguem ao dispositivo correto.
+4. Instanciação do objeto: o objeto global ``Adafruit_SSD1306`` será instanciado, passando os parâmetros definidos anteriormente. Dessa forma, temos: ``Adafruit_SSD1306 display(LARGURA_TELA, ALTURA_TELA, &Wire, RESET_TELA);``, sendo ``display`` o nome que demos ao objeto. Dessa forma, alocamos o buffer de memória e passamos o ponteiro ``&Wire`` para o objeto, concendendo a tela o acesso direto ao hardware I2C do Arduino.
+5. Trava de segurança: dentro de ``setup()``, temos uma trava de segurança utilizando o comando ``SSD1306_SWITCHCAPVCC``, que liga o conversor de tensão interno da tela. Se o Arduino não receber uma resposta do endereço I2C (0x3C), isso indica uma falha de hardware (ou de conexão/fiação). Fazemos então um código que entra em loop infinito caso isso aconteça, travando o sistema de continuar executando o código em um hardware defeituoso.
+```
+if(!display.begin(SSD1306_SWITCHCAPVCC, ENDERECO_I2C)){
+    for(;;);
+}
+```
+6. A lógica de atualização: telas OLED não recebem comandos diretos de caracteres como os LCDs tradicionais. Todo o desenho é feito em um vetor na memória RAM e "mandado" para o vidro da tela.
+- Usamos ``display.setTextColor(SSD1306_WHITE, SSD1306_BLACK);``. Ao definir a cor de fundo preta junto com o texto branco, os novos caracteres sobrescrevem os bits antigos diretamente no buffer de memória. Isso elimina a necessidade de usar ``display.clearDisplay()`` a cada leitura do sensor.
+- O sistema monitora variáveis de estado (``estadoAtualLed`` e ``estadoAnteriorLed``). A string de status ("LIGADO" ou "DESLIGADO") só é reescrita na memória se houver uma mudança real de hardware, economizando ciclos de processamento.
+- ``display.display()``: O único momento em que a comunicação I2C realmente acontece. No final do loop principal, este comando despacha os 1024 bytes de vídeo armazenados na RAM para o hardware do display, atualizando os pixels visíveis.
+
+### Código Final
+- Veja os arquivos de código. Apenas foi adicionado essa parte da tela no código original do projeto. Colocá-lo aqui tornaria essa seção muito grande.
+
+## Vídeo do projeto com a tela OLED
+O objeto que usei no vídeo é apenas para tampar o LDR e mostrar a tela em funcionamento.
+
+![telaOLED](Gifs/tela_oled.gif)
