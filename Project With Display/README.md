@@ -21,5 +21,21 @@ Vamos adicionar uma tela no projeto do LDR. A mini tela terá a função de moni
 
 Repare nas cores. O fio azul está conectado ao SDL e ao pino A5, enquanto o fio branco está conectado ao SDA e ao pino A4.
 
-## Software: programando a tela
-- De início, vamos precisar instalar algumas bibliotecas específicas para esse modelo de tela.
+## Software: explicações sobre programar a tela
+- De início, vamos precisar instalar algumas bibliotecas específicas para esse modelo de tela, para que o código compile e o microcontrolador consiga renderizar os gráficos. Elas podem ser instaladas através da Arduino IDE.
+- As bibliotecas que serão usadas:
+
+1. ``<Wire.h>`` é uma biblioteca interna padrão do Arduino que gerencia o hardware de comunicação I2C. É ela que é responsável por trafegar os dados através dos pinos A4 (SDA) e A5 (SCL).
+2. ``<Adafruit_GFX.h>`` (externa). Deve ser instalada. É uma biblioteca de processamento gráfico universal. Ela possui as rotinas matemáticas para desenhar pixels, linhas, círculos e escrever textos na memória.
+3. ``<Adafruit_SSD1306.h>`` (externa). Deve ser instalada. É a biblioteca específica para a tela utilizada, que traduz os comandos visuais de ``<Adafruit_GFX.h>`` em sinais que o controlador SSD1306 entende.
+
+- Para instalá-las, basta ir em 'Sketch' -> 'Include Library' -> 'Manage Libraries' e pesquisar as bibliotecas externas necessárias.
+
+![pesquisaBibliotecas1](Imagens/pesquisando_bibliotecas1.png)
+
+![pesquisaBibliotecas2](Imagens/pesquisando_bibliotecas2.png)
+
+### Explicações sobre o código
+- Vamos fazer algumas definições:
+
+1. ``LARGURA_TELA = 128`` e ``ALTURA_TELA = 64``
